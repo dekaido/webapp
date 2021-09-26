@@ -1,0 +1,22 @@
+Description: >
+    dekaido
+    Script for IAM roles
+
+Parameters:
+    # instance profile contains the IAM Role name(s) that we want to associate to our auto scaling EC2 Servers
+    # never give too much permissions to your EC2 instances! if they get hacked, the permissions get hacked also!
+    # in this example, I create a Role called UdacityS3ReadOnlyEC2 and just give it a policy of S3 Read-Only Access
+    ProfileWithRolesForOurApp:
+        Type: AWS::IAM::InstanceProfile
+        Properties: 
+        Roles:
+            - UdacityS3ReadOnlyEC2
+                
+                #!/bin/bash
+                apt-get update -y
+                apt-get install unzip awscli -y
+                apt-get install apache2 -y
+                systemctl start apache2.service
+                cd /var/www/html
+                aws s3 cp s3://udacity-demo-1/udacity.zip .
+                unzip -o udacity.zip

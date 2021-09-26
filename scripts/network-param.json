@@ -1,7 +1,7 @@
 [
 	{
 		"ParameterKey": "EnvironmentName",
-		"ParameterValue": "WebApp"
+		"ParameterValue": "Udagram"
 	},
 	{
 		"ParameterKey": "VpcCIDR",
