@@ -10,6 +10,30 @@ Parameters:
 
 Resources:
 
+    # instance profile contains the IAM Role name(s) that we want to associate to our auto scaling EC2 Servers
+    # never give too much permissions to your EC2 instances! if they get hacked, the permissions get hacked also!
+    
+  UdacityS3ReadOnlyEC2:
+    Type: AWS::IAM::Role
+    Properties: 
+        AssumeRolePolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+                - Effect: 'Allow'
+                  Principal:
+                    Service:
+                        - 'ec2.amazonaws.com'
+                  Action:
+                    - 'sts:AssumeRole'
+        Path: '/'
+
+  WebAppProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+        Path: '/'
+        Roles:
+            - UdacityS3ReadOnlyEC2
+
   LBSecGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -129,23 +153,14 @@ Resources:
         Fn::ImportValue:
           Fn::Sub: "${EnvironmentName}-VPCID"
 
-Outputs: 
+Outputs:
+    # WebAppRoleArn:
+    #     Value: !GetAttn UdacityS3ReadOnlyEC2.Arn
+    #     Export:
+    #         Name: !Sub ${EnvironmentName}-IAM-ARN
+
     WebAppLoadBalancerDNSName:
         Description: Load Balancer DNS Name
         Value: !Join [ "", [ 'http://', !GetAtt WebAppLB.DNSName ]]
         Export:
             Name: !Sub ${EnvironmentName}-Web-LB
-
-# Sample UserData
-# When creating your Launch Configuration, you may need a UserData script
-# here's one that you can use for Ubuntu Linux that will:
-# Install Apache Web Server, Start it, and create an index.html that will be displayed
-# when you visit the IP address of this server with your web browser
-#Here it is:
-#
-#          #!/bin/bash
-#          apt-get update -y
-#          apt-get install apache2 -y
-#          systemctl start apache2.service
-#          cd /var/www/html
-#          echo "Udacity Demo Web Server Up and Running!" > index.html
