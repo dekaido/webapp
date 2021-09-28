@@ -266,11 +266,17 @@ Resources:
         Type: AWS::AutoScaling::LaunchConfiguration
         Properties:
             UserData:
-                Fn::Base64: !Sub |
+                Fn::Base64: !Sub |                
                     #!/bin/bash
-                    sudo apt-get update -y
-                    sudo apt-get install apache2 -y
-                    sudo systemctl start apache2.service          
+                    sudo yum install httpd -y
+                    sudo /etc/init.d/httpd start
+                    cd /var/www/html
+                    sudo aws s3 cp s3://udacity-demo-1/udacity.zip .
+                    sudo unzip -o udacity.zip
+# !/bin/bash
+# sudo apt-get update -y
+# sudo apt-get install apache2 -y
+# sudo systemctl start apache2.service          
             ImageId: ami-005bdb005fb00e791
             SecurityGroups:
             - Ref: WebServerSecGroup
