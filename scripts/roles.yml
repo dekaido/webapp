@@ -29,12 +29,13 @@ Resources:
     
     WebAppProfile:
         Type: AWS::IAM::InstanceProfile
-        Properties: 
+        Properties:
+            Path: '/'
             Roles:
                 - UdacityS3ReadOnlyEC2
 
 Output:
-    WebAppProfile:
-        Value: !Ref WebAppProfile
+    WebAppRoleArn:
+        Value: !GetAttn UdacityS3ReadOnlyEC2.Arn
         Export:
-            Name: !Sub ${EnvironmentName}-IAM-PROFILE
+            Name: !Sub ${EnvironmentName}-IAM-ARN
