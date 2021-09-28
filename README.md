@@ -13,3 +13,4 @@ This repo provides the code for the "ND9991 - C2- Infrastructure as Code - Deplo
 **Commands for:**
 - create stack
 - update stack
+- delete stack
