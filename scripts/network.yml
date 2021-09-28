@@ -1,6 +1,9 @@
 Description: >
     dekaido
-    This template deploys: 2 public and 2 private subnets across 2 AZs.
+    This template deploys: 
+    (1) 2 public and 2 private subnets across 2 AZs.
+    (2) 1 S3 user role
+    (3) security groups, auto-scaling, load-balancing, healthchecks for private subnets
 
 Parameters:
 
@@ -43,7 +46,8 @@ Resources:
             Tags: 
                 - Key: Name 
                   Value: !Ref EnvironmentName
-            
+        
+# network ------------------------------
     InternetGateway:
         Type: AWS::EC2::InternetGateway
         Properties:
@@ -195,7 +199,7 @@ Resources:
             RouteTableId: !Ref PrivateRouteTable2
             SubnetId: !Ref PrivateSubnet2
 
-##
+# user iam roles ------------------------------
     UdacityS3ReadOnlyEC2:
         Type: AWS::IAM::Role
         Properties: 
@@ -217,6 +221,7 @@ Resources:
             Roles:
                 - !Ref UdacityS3ReadOnlyEC2
 
+# server and security ------------------------------
     LBSecGroup:
         Type: AWS::EC2::SecurityGroup
         Properties:
@@ -397,7 +402,6 @@ Outputs:
         Export:
           Name: !Sub ${EnvironmentName}-PRI2-SN
 
-    ##
     WebAppLoadBalancerDNSName:
         Description: Load Balancer DNS Name
         Value: !Join [ "", [ 'http://', !GetAtt WebAppLB.DNSName ]]
