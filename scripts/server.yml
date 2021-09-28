@@ -77,8 +77,8 @@ Resources:
           !Sub "${EnvironmentName}-PRIV-NETS"
       LaunchConfigurationName:
         Ref: WebAppLaunchConfig
-      MinSize: '3'
-      MaxSize: '5'
+      MinSize: '4'
+      MaxSize: '6'
       TargetGroupARNs:
       - Ref: WebAppTargetGroup
 
@@ -131,10 +131,11 @@ Resources:
           Fn::Sub: "${EnvironmentName}-VPCID"
 
 Outputs: 
-  # This is also optional.
-  # Bonus points for useful outputs!
-  # for example, if you create a Load Balancer
-  # it's nice to output the URL to it here, so that we don't have to go to the console to get it.
+    WebAppLoadBalancerDNSName:
+        Description: Load Balancer DNS Name
+        Value: !Join [ "", [ 'http://', !GetAtt WebAppLB.DNSName ]]
+        Export:
+            Name: !Sub ${EnvironmentName}-Web-LB
 
 # Sample UserData
 # When creating your Launch Configuration, you may need a UserData script
