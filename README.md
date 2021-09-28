@@ -1,6 +1,17 @@
-### Project Title - Deploy a high-availability web app using CloudFormation
-This repo provides the code for the "ND9991 - C2- Infrastructure as Code - Deploy a high-availability web app using CloudFormation" project. This folder contains the following files:
+## Project Title - Deploy a high-availability web app using CloudFormation
+This repo provides the code for the "ND9991 - C2- Infrastructure as Code - Deploy a high-availability web app using CloudFormation" project. 
 
+### Note to run:
+Example to update stack:
+
+			dekaido@penguin:~/udacity/webapp/bash$ bash update.sh udagram ../scripts/infrastructure.yml ../scripts/parameters.json
+
+Result:
+			{
+				"StackId": "arn:aws:cloudformation:us-west-2:835758441568:stack/udagram/be5749a0-2065-11ec-a19c-0642c62a6a49"
+			}
+
+### This folder contains the following files:
 **Scripts for:**
 - iam roles
 - network
