@@ -70,7 +70,7 @@ Resources:
             MapPublicIpOnLaunch: true
             Tags: 
                 - Key: Name 
-                  Value: !Sub ${EnvironmentName} Public Subnet (AZ1)
+                  Value: Udagram-PUB1-SN
 
     PublicSubnet2: 
         Type: AWS::EC2::Subnet
@@ -81,7 +81,7 @@ Resources:
             MapPublicIpOnLaunch: true
             Tags: 
                 - Key: Name 
-                  Value: !Sub ${EnvironmentName} Public Subnet (AZ2)
+                  Value: Udagram-PUB2-SN
 
     PrivateSubnet1: 
         Type: AWS::EC2::Subnet
@@ -92,7 +92,7 @@ Resources:
             MapPublicIpOnLaunch: false
             Tags: 
                 - Key: Name 
-                  Value: !Sub ${EnvironmentName} Private Subnet (AZ1)
+                  Value: Udagram-PRI1-SN
 
     PrivateSubnet2: 
         Type: AWS::EC2::Subnet
@@ -103,7 +103,7 @@ Resources:
             MapPublicIpOnLaunch: false
             Tags: 
                 - Key: Name 
-                  Value: !Sub ${EnvironmentName} Private Subnet (AZ2)
+                  Value: Udagram-PRI2-SN
 
     NatGateway1EIP:
         Type: AWS::EC2::EIP
@@ -121,13 +121,13 @@ Resources:
         Type: AWS::EC2::NatGateway
         Properties: 
             AllocationId: !GetAtt NatGateway1EIP.AllocationId
-            SubnetId: !Ref PublicSubnet1
+            SubnetId: Udagram-PUB1-SN
 
     NatGateway2: 
         Type: AWS::EC2::NatGateway
         Properties:
             AllocationId: !GetAtt NatGateway2EIP.AllocationId
-            SubnetId: !Ref PublicSubnet2
+            SubnetId: Udagram-PUB2-SN
 
     PublicRouteTable:
         Type: AWS::EC2::RouteTable
@@ -135,7 +135,7 @@ Resources:
             VpcId: !Ref VPC
             Tags: 
                 - Key: Name 
-                  Value: !Sub ${EnvironmentName} Public Routes
+                  Value: Udagram-PUB-RT
 
     DefaultPublicRoute: 
         Type: AWS::EC2::Route
@@ -148,14 +148,14 @@ Resources:
     PublicSubnet1RouteTableAssociation:
         Type: AWS::EC2::SubnetRouteTableAssociation
         Properties:
-            RouteTableId: !Ref PublicRouteTable
-            SubnetId: !Ref PublicSubnet1
+            RouteTableId: Udagram-PUB-RT
+            SubnetId: Udagram-PUB1-SN
 
     PublicSubnet2RouteTableAssociation:
         Type: AWS::EC2::SubnetRouteTableAssociation
         Properties:
-            RouteTableId: !Ref PublicRouteTable
-            SubnetId: !Ref PublicSubnet2
+            RouteTableId: Udagram-PUB-RT
+            SubnetId: Udagram-PUB2-SN
     
     PrivateRouteTable1:
         Type: AWS::EC2::RouteTable
@@ -163,20 +163,20 @@ Resources:
             VpcId: !Ref VPC
             Tags: 
                 - Key: Name 
-                  Value: !Sub ${EnvironmentName} Private Routes (AZ1)
+                  Value: Udagram-PRI1-RT
 
     DefaultPrivateRoute1:
         Type: AWS::EC2::Route
         Properties:
-            RouteTableId: !Ref PrivateRouteTable1
+            RouteTableId: Udagram-PRI1-RT
             DestinationCidrBlock: 0.0.0.0/0
             NatGatewayId: !Ref NatGateway1
 
     PrivateSubnet1RouteTableAssociation:
         Type: AWS::EC2::SubnetRouteTableAssociation
         Properties:
-            RouteTableId: !Ref PrivateRouteTable1
-            SubnetId: !Ref PrivateSubnet1
+            RouteTableId: Udagram-PRI1-RT
+            SubnetId: Udagram-PRI-SN
 
     PrivateRouteTable2:
         Type: AWS::EC2::RouteTable
@@ -184,20 +184,20 @@ Resources:
             VpcId: !Ref VPC
             Tags: 
                 - Key: Name 
-                  Value: !Sub ${EnvironmentName} Private Routes (AZ2)
+                  Value: Udagram-PRI2-RT
 
     DefaultPrivateRoute2:
         Type: AWS::EC2::Route
         Properties:
-            RouteTableId: !Ref PrivateRouteTable2
+            RouteTableId: Udagram-PRI2-RT
             DestinationCidrBlock: 0.0.0.0/0
             NatGatewayId: !Ref NatGateway2
 
     PrivateSubnet2RouteTableAssociation:
         Type: AWS::EC2::SubnetRouteTableAssociation
         Properties:
-            RouteTableId: !Ref PrivateRouteTable2
-            SubnetId: !Ref PrivateSubnet2
+            RouteTableId: Udagram-PRI2-RT
+            SubnetId: Udagram-PRI2-SN
 
 # user iam roles ------------------------------
     UdacityS3ReadOnlyEC2:
@@ -228,7 +228,7 @@ Resources:
             GroupDescription: Allow http to our load balancer
             VpcId:
                 Fn::ImportValue:
-                    !Sub "${EnvironmentName}-VPCID"
+                    Udagram-VPCID
             SecurityGroupIngress:
             -   IpProtocol: tcp
                 FromPort: 80
@@ -246,7 +246,7 @@ Resources:
             GroupDescription: Allow http to our hosts and SSH from local only
             VpcId:
                 Fn::ImportValue:
-                    !Sub "${EnvironmentName}-VPCID"
+                    Udagram-VPCID
             SecurityGroupIngress:
             -   IpProtocol: tcp
                 FromPort: 80
@@ -301,7 +301,7 @@ Resources:
         Properties:
             VPCZoneIdentifier:
             - Fn::ImportValue: 
-                !Sub "${EnvironmentName}-PRIV-NETS"
+                Udagram-PRIV-NETS
             LaunchConfigurationName:
                 Ref: WebAppLaunchConfig
             MinSize: '4'
@@ -313,8 +313,8 @@ Resources:
         Type: AWS::ElasticLoadBalancingV2::LoadBalancer
         Properties:
             Subnets:
-            - Fn::ImportValue: !Sub "${EnvironmentName}-PUB1-SN"
-            - Fn::ImportValue: !Sub "${EnvironmentName}-PUB2-SN"
+            - subnet-0f2a11fdecdb30a39
+            - subnet-037a223ec181f7b94
             SecurityGroups:
             - Ref: LBSecGroup
 
@@ -353,9 +353,7 @@ Resources:
             Port: 80
             Protocol: HTTP
             UnhealthyThresholdCount: 5
-            VpcId: 
-                Fn::ImportValue:
-                    Fn::Sub: "${EnvironmentName}-VPCID"
+            VpcId: vpc-0d2eb1e972f548911
 
 Outputs: 
     VPC: 
